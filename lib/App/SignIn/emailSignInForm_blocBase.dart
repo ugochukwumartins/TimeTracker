@@ -9,13 +9,33 @@ import 'package:time_tracking_app/common/Showexception.dart';
 
 import 'Validator.dart';
 import 'email_sigin_model.dart';
+import 'email_sign_in_bloc.dart';
 
-class SignInbody extends StatefulWidget with emailandPasswordValidator {
+class SignInbodyblocBase extends StatefulWidget with emailandPasswordValidator {
+  final EmailSignInBloc bloc;
+  static Widget create(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+    return Provider<EmailSignInBloc>(
+      create: (_) => EmailSignInBloc(auth: auth),
+      child: Consumer<EmailSignInBloc>(
+        builder: (_, bloc, __) => SignInbodyblocBase(
+          bloc: bloc,
+        ),
+      ),
+      dispose: (
+        _,
+        bloc,
+      ) =>
+          bloc.dispose(),
+    );
+  }
+
+  SignInbodyblocBase({@required this.bloc});
   @override
-  _SignInbodyState createState() => _SignInbodyState();
+  _SignInbodyblocBase createState() => _SignInbodyblocBase();
 }
 
-class _SignInbodyState extends State<SignInbody> {
+class _SignInbodyblocBase extends State<SignInbodyblocBase> {
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
   bool submitted = false;
   FocusNode _emailNode = new FocusNode();
@@ -152,13 +172,18 @@ class _SignInbodyState extends State<SignInbody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: buildElement(),
-      ),
-    );
+    return StreamBuilder<EmailSigninModel>(
+        stream: widget.bloc.modelStream,
+        initialData: EmailSigninModel(),
+        builder: (context, snapShot) {
+          return Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: buildElement(),
+            ),
+          );
+        });
   }
 }
