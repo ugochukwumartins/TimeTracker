@@ -8,42 +8,38 @@ import 'package:time_tracking_app/common/Showdialog.dart';
 import 'package:time_tracking_app/common/Showexception.dart';
 
 import 'Validator.dart';
+import 'email_sigin_changed_model.dart';
 import 'email_sigin_model.dart';
 import 'email_sign_in_bloc.dart';
 
-class SignInbodyblocBase extends StatefulWidget {
-  final EmailSignInBloc bloc;
+class SignInbodyChangedNotifier extends StatefulWidget {
+  final EmailSigninChangedModel model;
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
-    return Provider<EmailSignInBloc>(
-      create: (_) => EmailSignInBloc(auth: auth),
-      child: Consumer<EmailSignInBloc>(
-        builder: (_, bloc, __) => SignInbodyblocBase(
-          bloc: bloc,
+    return ChangeNotifierProvider<EmailSigninChangedModel>(
+      create: (_) => EmailSigninChangedModel(auth: auth),
+      child: Consumer<EmailSigninChangedModel>(
+        builder: (_, model, __) => SignInbodyChangedNotifier(
+          model: model,
         ),
       ),
-      dispose: (
-        _,
-        bloc,
-      ) =>
-          bloc.dispose(),
     );
   }
 
-  SignInbodyblocBase({@required this.bloc});
+  SignInbodyChangedNotifier({@required this.model});
   @override
-  _SignInbodyblocBase createState() => _SignInbodyblocBase();
+  _SignInbodyChangedNotifier createState() => _SignInbodyChangedNotifier();
 }
 
-class _SignInbodyblocBase extends State<SignInbodyblocBase> {
+class _SignInbodyChangedNotifier extends State<SignInbodyChangedNotifier> {
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
-
+  EmailSigninChangedModel get model => widget.model;
   FocusNode _emailNode = new FocusNode();
   FocusNode _passwordNode = new FocusNode();
   final TextEditingController _emailController = new TextEditingController();
   final TextEditingController _passwordController = new TextEditingController();
 
-  void emaileditingComplete(EmailSigninModel model) {
+  void emaileditingComplete() {
     final newfocus =
         model.emailvalidator.Isvalid(model.email) ? _passwordNode : _emailNode;
     FocusScope.of(context).requestFocus(newfocus);
@@ -60,7 +56,7 @@ class _SignInbodyblocBase extends State<SignInbodyblocBase> {
 
   Future<void> _signIn() async {
     try {
-      await widget.bloc.signIn();
+      await widget.model.signIn();
       Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
       Showexception(
@@ -72,19 +68,19 @@ class _SignInbodyblocBase extends State<SignInbodyblocBase> {
   }
 
   void _Toggle() {
-    widget.bloc.Toggle();
+    widget.model.Toggle();
 
     _passwordController.clear();
     _emailController.clear();
   }
 
-  List<Widget> buildElement(EmailSigninModel model) {
+  List<Widget> buildElement() {
     return [
       TextField(
         focusNode: _emailNode,
-        onChanged: (email) => widget.bloc.updateEmail(email),
+        onChanged: (email) => model.updateEmail(email),
         controller: _emailController,
-        onEditingComplete: () => emaileditingComplete(model),
+        onEditingComplete: () => emaileditingComplete(),
         decoration: InputDecoration(
           errorText: model.EmailErroText,
           labelText: "Email",
@@ -100,7 +96,7 @@ class _SignInbodyblocBase extends State<SignInbodyblocBase> {
       TextField(
         focusNode: _passwordNode,
         controller: _passwordController,
-        onChanged: (password) => widget.bloc.updatePassword(password),
+        onChanged: (password) => model.updatePassword(password),
         decoration: InputDecoration(
           errorText: model.PasswordErroText,
           labelText: "Password",
@@ -135,19 +131,13 @@ class _SignInbodyblocBase extends State<SignInbodyblocBase> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<EmailSigninModel>(
-        stream: widget.bloc.modelStream,
-        initialData: EmailSigninModel(),
-        builder: (context, snapShot) {
-          final EmailSigninModel model = snapShot.data;
-          return Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: buildElement(model),
-            ),
-          );
-        });
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: buildElement(),
+      ),
+    );
   }
 }

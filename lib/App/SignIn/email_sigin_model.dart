@@ -1,9 +1,11 @@
+import 'Validator.dart';
+
 enum EmailSignInFormType {
   signIn,
   Register,
 }
 
-class EmailSigninModel {
+class EmailSigninModel with emailandPasswordValidator {
   EmailSigninModel({
     this.email = " ",
     this.password = " ",
@@ -30,5 +32,33 @@ class EmailSigninModel {
       isloading: isloading ?? this.isloading,
       submited: submited ?? this.submited,
     );
+  }
+
+  String get Primary {
+    return emailSignInFormType == EmailSignInFormType.signIn
+        ? "Sign In"
+        : "Create an Account";
+  }
+
+  String get Secondary {
+    return emailSignInFormType == EmailSignInFormType.signIn
+        ? "Need an Account ? Register"
+        : "Have an Account ? Sign in";
+  }
+
+  bool get cansubmit {
+    return emailvalidator.Isvalid(email) &&
+        passwordvalidator.Isvalid(password) &&
+        !isloading;
+  }
+
+  String get PasswordErroText {
+    bool passswordvalid = submited && !passwordvalidator.Isvalid(password);
+    return passswordvalid ? passwordError : null;
+  }
+
+  String get EmailErroText {
+    bool emailvalid = submited && !emailvalidator.Isvalid(email);
+    return emailvalid ? emailError : null;
   }
 }

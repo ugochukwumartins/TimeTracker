@@ -6,21 +6,16 @@ import 'package:time_tracking_app/Services/Auth.dart';
 
 class SignInBloc {
   final AuthBase auth;
-  StreamController<bool> _isloadingController = new StreamController<bool>();
+  final ValueNotifier<bool> isLoadig;
 
-  SignInBloc({@required this.auth});
-  Stream<bool> get isloadingStream => _isloadingController.stream;
-  void dispose() {
-    _isloadingController.close();
-  }
+  SignInBloc({@required this.isLoadig, @required this.auth});
 
-  void _setIsloading(bool isLoading) => _isloadingController.add(isLoading);
   Future<User> _singin(Future<User> Function() signInMethod) async {
     try {
-      _setIsloading(true);
+      isLoadig.value = true;
       return await signInMethod();
     } catch (e) {
-      _setIsloading(false);
+      isLoadig.value = false;
 
       rethrow;
     }

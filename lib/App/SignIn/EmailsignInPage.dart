@@ -3,6 +3,7 @@ import 'package:time_tracking_app/Services/Auth.dart';
 
 import 'SigninPageEmail.dart';
 import 'emailSignInForm_blocBase.dart';
+import 'emailSignInForm_changed_notifier.dart';
 
 class EmailSignInPage extends StatelessWidget {
   @override
@@ -15,7 +16,7 @@ class EmailSignInPage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.all(18),
         child: Card(
-          child: SignInbodyblocBase.create(context),
+          child: SignInbodyChangedNotifier.create(context),
         ),
       ),
     );

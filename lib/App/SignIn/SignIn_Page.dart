@@ -12,15 +12,23 @@ import 'SigninPageEmail.dart';
 
 class SignInPage extends StatelessWidget {
   final SignInBloc bloc;
-
-  const SignInPage({Key key, @required this.bloc}) : super(key: key);
+  final bool isloading;
+  const SignInPage({Key key, @required this.bloc, this.isloading})
+      : super(key: key);
   static Widget create(BuildContext context) {
     final auth = Provider.of<AuthBase>(context, listen: false);
-    return Provider<SignInBloc>(
-      create: (_) => SignInBloc(auth: auth),
-      dispose: (_, bloc) => bloc.dispose(),
-      child: Consumer<SignInBloc>(
-        builder: (_, bloc, __) => SignInPage(bloc: bloc),
+    return ChangeNotifierProvider<ValueNotifier<bool>>(
+      create: (_) => ValueNotifier<bool>(false),
+      child: Consumer<ValueNotifier<bool>>(
+        builder: (_, isloading, __) => Provider<SignInBloc>(
+          create: (_) => SignInBloc(auth: auth, isLoadig: isloading),
+          child: Consumer<SignInBloc>(
+            builder: (_, bloc, __) => SignInPage(
+              bloc: bloc,
+              isloading: isloading.value,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -81,16 +89,10 @@ class SignInPage extends StatelessWidget {
         appBar: AppBar(
           title: Text("Time Tracker"),
         ),
-        body: StreamBuilder(
-          stream: bloc.isloadingStream,
-          initialData: false,
-          builder: (context, snapshot) {
-            return _buildContainer(context, snapshot.data);
-          },
-        ));
+        body: _buildContainer(context));
   }
 
-  Widget _buildContainer(BuildContext context, bool isloading) {
+  Widget _buildContainer(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -99,7 +101,7 @@ class SignInPage extends StatelessWidget {
         children: <Widget>[
           SizedBox(
             height: 50,
-            child: _SignInIdicator(isloading),
+            child: _SignInIdicator(),
           ),
           SizedBox(
             height: 48,
@@ -200,7 +202,7 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  Widget _SignInIdicator(bool isloading) {
+  Widget _SignInIdicator() {
     if (isloading) {
       return Center(
         child: CircularProgressIndicator(),
