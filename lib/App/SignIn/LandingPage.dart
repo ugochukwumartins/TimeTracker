@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracking_app/Homes/HomePage.dart';
 import 'package:time_tracking_app/Services/Auth.dart';
 import 'package:time_tracking_app/Services/Database.dart';
 import '../../Homes/Home_Page.dart';
@@ -20,7 +21,7 @@ class LandingPage extends StatelessWidget {
           } else {
             return Provider<Database>(
               create: (_) => FirestoreDataBase(Uid: users.uid),
-              child: JobsPage(),
+              child: HomePage(),
             );
           }
         }

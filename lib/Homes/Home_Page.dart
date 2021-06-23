@@ -15,24 +15,6 @@ import 'AddJobPage.dart';
 import 'job_list_style.dart';
 
 class JobsPage extends StatelessWidget {
-  Future<void> _singInOut(BuildContext context) async {
-    final auth = Provider.of<AuthBase>(context, listen: false);
-    await auth.signOut();
-  }
-
-  Future<void> ConfirmsingInOut(BuildContext context) async {
-    final confirmation = await Showdialog(
-      context,
-      Title: "LogOut",
-      content: "Are You Sure You want To Logout",
-      CancelactionText: "Cancel",
-      DefaultActionText: "LogOut",
-    );
-    if (confirmation == true) {
-      await _singInOut(context);
-    }
-  }
-
   Future<void> _delete(BuildContext context, Jobmodel job) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
@@ -52,25 +34,19 @@ class JobsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Jobs"),
         actions: <Widget>[
-          FlatButton(
-              child: Text(
-                "logOut",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () => ConfirmsingInOut(context)),
+          IconButton(
+            onPressed: () => AddAndEdithJob.show(
+              context,
+              database: Provider.of<Database>(context, listen: false),
+            ),
+            icon: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          ),
         ],
       ),
       body: _buildActionContext(context),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => AddAndEdithJob.show(
-          context,
-          database: Provider.of<Database>(context, listen: false),
-        ),
-      ),
     );
   }
 
