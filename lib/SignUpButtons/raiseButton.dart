@@ -11,7 +11,7 @@ class buildRaisedButton extends StatelessWidget {
   const buildRaisedButton(
       {Key key,
       this.color,
-      this.borderRadious,
+      this.borderRadious: 2.0,
       this.onpressed,
       this.child,
       this.fontsize,

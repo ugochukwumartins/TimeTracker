@@ -25,4 +25,20 @@ class Jobmodel {
       'ratePerHour': ratePerhour,
     };
   }
+
+  @override
+  int get hashCode => hashValues(id, name, ratePerhour);
+
+  @override
+  bool operator ==(other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final Jobmodel otherJob = other;
+    return id == otherJob.id &&
+        name == otherJob.name &&
+        ratePerhour == otherJob.ratePerhour;
+  }
+
+  @override
+  String toString() => 'id: $id, name: $name, ratePerhour: $ratePerhour';
 }

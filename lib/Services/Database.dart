@@ -36,6 +36,7 @@ class FirestoreDataBase implements Database {
         await deleteEntry(entry);
       }
     }
+    await _service.deledata(path: ApiPath.job(Uid, job.id));
   }
 
   @override
